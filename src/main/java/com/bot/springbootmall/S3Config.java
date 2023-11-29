@@ -1,4 +1,4 @@
-package com.bot.springbootmall.product;
+package com.bot.springbootmall;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

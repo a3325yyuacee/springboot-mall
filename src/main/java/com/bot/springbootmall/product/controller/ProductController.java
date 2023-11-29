@@ -1,6 +1,6 @@
 package com.bot.springbootmall.product.controller;
 
-import com.bot.springbootmall.product.AmazonS3ClientService;
+import com.bot.springbootmall.AmazonS3ClientService;
 import com.bot.springbootmall.product.constant.ProductCategory;
 import com.bot.springbootmall.product.constant.ProductStatus;
 import com.bot.springbootmall.product.dto.ProductQueryParams;
@@ -15,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.List;

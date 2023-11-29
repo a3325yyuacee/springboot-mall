@@ -1,4 +1,4 @@
-package com.bot.springbootmall.product;
+package com.bot.springbootmall;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
