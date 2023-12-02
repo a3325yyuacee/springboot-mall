@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>會員結帳</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- 引入Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style type="text/css">
+        /* 全局背景 */
+        body {
+            background-image: url('https://cha103-29.s3.ap-northeast-1.amazonaws.com/pexels-jeff-ibera-1320755.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* 結帳詳情區域 */
+        #checkout-details {
+            background-color: rgba(255, 255, 255, 0.4); /* 半透明背景 */
+            border-radius: 10px; /* 圓角 */
+            padding: 20px;
+            margin: 20px auto; /* 水平居中 */
+            width: 80%; /* 或需要的任何百分比 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 盒陰影 */
+        }
+
+        /* 表格樣式 */
+        #cart-items-table {
+            background-color: transparent; /* 確保表格背景透明 */
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        #cart-items-table th, #cart-items-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #cart-items-table th {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* 標題樣式 */
+        h2, h3 {
+            text-align: center;
+            color: #333; /* 或您希望的任何顏色 */
+            margin: 10px 0;
+        }
+
+        /* 表單樣式 */
+        form {
+            background-color: transparent; /* 表單背景透明 */
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        label {
+            display: block; /* 讓每個標籤都獨自占一行 */
+            margin: 10px 0; /* 在標籤上下添加外邊距 */
+        }
+
+
+        input[type="text"], input[type="tel"], select {
+            width: 60%; /* 或者您想要的任何百分比，讓輸入框看起來更窄 */
+            margin: 10px auto; /* 增加上下外邊距並水平居中 */
+            display: block; /* 確保每個輸入框都會顯示在新的一行 */
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: rgba(255, 255, 255, 0.8);
+            margin-left: 0; /* 左外邊距設為 0，靠左對齊 */
+            margin-right: auto; /* 右外邊距自動，將元素對齊到左邊 */
+
+        }
+
+        /* 按鈕樣式 */
+        button {
+            background-color: #5cb85c; /* 確認按鈕顏色 */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4cae4c; /* 按鈕懸停效果 */
+        }
+
+        #cancel-button {
+            background-color: #d9534f; /* 取消按鈕顏色 */
+        }
+
+        /* 頁尾樣式 */
+        footer {
+            background-color: #333; /* 您可以選擇任何您喜歡的顏色 */
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* 為了解決可能的內容與頁腳重疊問題，確保主內容有足夠的下邊距 */
+        #checkout-details {
+            margin-bottom: 60px; /* 頁尾高度加上一些額外空間 */
+        }
+
+        /* 信用卡輸入框的外層容器 */
+        #credit-card-info {
+            display: flex;
+            flex-direction: column; /* 子元素垂直堆疊 */
+            align-items: center;
+            margin-bottom: 20px; /* 與下一個元素的距離 */
+        }
+
+        /* 信用卡輸入框和標籤的行容器 */
+        .credit-card-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px; /* 與下一個元素的距離 */
+        }
+
+        /* 單個信用卡輸入框樣式 */
+        .credit-card-input {
+            width: 14% !important; /* 四個輸入框均分空間，10px為輸入框間的間隙 */
+            margin: 0 5px; /* 輸入框之間的間隙 */
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* 調整錯誤消息的顯示 */
+        .error-message {
+            display: block;
+            width: 100%;
+            text-align: center;
+            color: red;
+        }
+
+        /* 隱藏標籤，只在必要時顯示（例如屏幕閱讀器） */
+        #credit-card-info label {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div id="dynamicContent"></div>  <!-- 動態內容的容器 -->
+
+
+
+<div id="checkout-details">
+    <h2>Check Out</h2>
+    <table id="cart-items-table" class="table">
+        <thead>
+        <tr>
+            <th>商品名稱</th>
+            <th>單價</th>
+            <th>數量</th>
+            <th>小計</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 購物車商品將在這裡動態生成 -->
+        </tbody>
+    </table>
+
+    <div class="address-container">
+        <h3>Shipping Detail</h3>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="autofillDetailsCheckbox">
+            <label class="form-check-label" for="autofillDetailsCheckbox">
+                使用我的會員資訊：
+            </label>
+        </div>
+        <form id="shipping-form">
+            <label for="recipient-name">收件人姓名:</label>
+            <input type="text" id="recipient-name" name="recipient-name" required>
+            <span class="error-message" style="color: red; display: none;">請輸入收件人姓名！</span>
+
+            <label for="recipient-phone">收件人電話:</label>
+            <input type="tel" id="recipient-phone" name="recipient-phone" pattern="[0-9]{10}" required>
+            <span class="error-message" style="color: red; display: none;">請輸入收件人電話！</span>
+
+            <label for="city">縣市:</label>
+            <select id="city" name="city" required>
+                <option value="">選擇縣市</option>
+                <!-- 在這裡添加所有台灣的縣市 -->
+                <option value="台北市">台北市</option>
+                <option value="新北市">新北市</option>
+                <option value="桃園市">桃園市</option>
+                <option value="台中市">台中市</option>
+                <option value="台南市">台南市</option>
+                <option value="高雄市">高雄市</option>
+                <option value="基隆市">基隆市</option>
+                <option value="新竹市">新竹市</option>
+                <option value="新竹縣">新竹縣</option>
+                <option value="苗栗縣">苗栗縣</option>
+                <option value="彰化縣">彰化縣</option>
+                <option value="南投縣">南投縣</option>
+                <option value="雲林縣">雲林縣</option>
+                <option value="嘉義市">嘉義市</option>
+                <option value="嘉義縣">嘉義縣</option>
+                <option value="屏東縣">屏東縣</option>
+                <option value="宜蘭縣">宜蘭縣</option>
+                <option value="花蓮縣">花蓮縣</option>
+                <option value="台東縣">台東縣</option>
+                <option value="澎湖縣">澎湖縣</option>
+                <option value="金門縣">金門縣</option>
+                <option value="連江縣">連江縣</option>
+
+            </select>
+            <label for="recipient-address">街道和門牌號碼:</label>
+            <input type="text" id="recipient-address" name="recipient-address" placeholder="例：信義路100號" required>
+            <span class="error-message" style="color: red; display: none;">請輸入街道和門牌號碼！</span>
+
+            <!-- 支付方式的下拉選單 -->
+            <select id="payment-method" name="payment-method" required onchange="updateStatus(this.value)">
+                <option value="">選擇支付方式</option>
+                <option value="1">信用卡</option>
+                <option value="0">轉帳</option>
+            </select>
+
+            <!-- 信用卡資訊的文本框，分為四個部分 -->
+            <div id="credit-card-info" style="display:none;">
+                <label for="card-number-section-1">信用卡號碼:</label>
+                <input type="text" id="card-number-section-1" name="card-number-section-1" class="credit-card-input" maxlength="4" pattern="\d{4}" required>
+                <span class="dash">-</span>
+                <input type="text" id="card-number-section-2" name="card-number-section-2" class="credit-card-input" maxlength="4" pattern="\d{4}" required>
+                <span class="dash">-</span>
+                <input type="text" id="card-number-section-3" name="card-number-section-3" class="credit-card-input" maxlength="4" pattern="\d{4}" required>
+                <span class="dash">-</span>
+                <input type="text" id="card-number-section-4" name="card-number-section-4" class="credit-card-input" maxlength="4" pattern="\d{4}" required>
+                <span class="error-message" style="color: red; display: none;">請輸入有效卡號 (格式：xxxx-xxxx-xxxx-xxxx)</span>
+            </div>
+
+
+            <!-- 轉帳資訊的文本框 -->
+            <div id="transfer-info" style="display:none;">
+                <label for="account-number">轉帳帳號:</label>
+                <input type="text" id="account-number" name="account-number">
+                <span class="error-message" style="color: red; display: none;">請輸入有效帳戶</span>
+            </div>
+
+            <button type="submit">結帳</button>
+            <a href="#" class="button-link">
+                <button type="button" id="cancel-button">取消</button>
+            </a>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <div id="footer"></div>  <!-- 頁尾的容器 -->
+</footer>
+
+<script>
+    //==================================獲取當前頁面的路徑名稱==============================================
+    let pathName = window.document.location.pathname;
+    //==================================從路徑名稱中提取出項目名稱==============================================
+    let projectName = pathName.substring(0, pathName.substring(1).indexOf("/") + 1);
+    //==================================預設狀態為true（信用卡）==============================================
+    let orderStatus = true;
+
+    //==================================取得會員servlet URL==============================================
+    $(document).ready(function(){
+        // 加載頁尾
+        $("#footer").load(projectName +"/front-end/index/footer.jsp");
+
+        // 處理會員登入
+        $.ajax({
+            type: "POST",
+            url: projectName + "/front-end/members/members.do?action=indexLogin",
+            success: function(data) {
+                // ... 登入邏輯
+                const responseMessage = parseInt(data);
+                var guided = projectName + '/front-end/index/guided.jsp';
+                var guidedSignout= projectName + '/front-end/index/guidedSignout.jsp';
+                if (responseMessage === 1) {
+                    $("#dynamicContent").load(guided);
+                } else if (responseMessage === 0) {
+
+                    $("#dynamicContent").load(guidedSignout);
+                }
+            },
+            error: function(error) {
+                console.log("AJAX error:", error);
+            }
+        });
+    });
+    //==================================當文檔加載完成後，執行以下函數==============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // 從sessionStorage中獲取購物車項目，若無則設為空數組
+        const cartItems = JSON.parse(sessionStorage.getItem('cartItems')) || [];
+        // 如果購物車不為空，則顯示購物車項目，否則彈出提示
+        if (cartItems.length > 0) {
+            displayCartItems(cartItems);
+        } else {
+            alert("購物車是空的。");
+        }
+
+        // 獲取取消按鈕的父節點，設定其超連結為項目首頁
+        let cancelLink = document.getElementById('cancel-button').parentNode;
+        cancelLink.href = projectName + '/productFront.html';
+
+        // 為每個信用卡輸入框添加適當的事件監聽器
+        const cardNumberInputs = document.querySelectorAll('.credit-card-input');
+        cardNumberInputs.forEach((input, index) => {
+            // 當用戶輸入時，自動跳轉到下一個輸入框
+            input.addEventListener('input', function(event) {
+                // 僅允許數字輸入
+                event.target.value = event.target.value.replace(/[^\d]/g, '');
+                // 如果輸入了四個數字，且不是最後一個輸入框，則跳轉到下一個輸入框
+                if (event.target.value.length === 4 && index < 3) {
+                    cardNumberInputs[index + 1].focus();
+                }
+            });
+        });
+
+        // 绑定表单提交事件处理器
+        document.getElementById('shipping-form').addEventListener('submit', function(event) {
+            // 防止表單的默認提交行為
+            event.preventDefault();
+
+            var isValid = true;
+            var inputs = this.querySelectorAll('input[required]');
+
+            // 前端验证逻辑
+            inputs.forEach(function(input) {
+                var errorSpan = input.nextElementSibling;
+                if (!input.validity.valid) {
+                    errorSpan.style.display = 'inline';
+                    isValid = false;
+                } else {
+                    errorSpan.style.display = 'none';
+                }
+            });
+
+            // 拼接信用卡號碼
+            var cardNumberComplete = '';
+            cardNumberInputs.forEach(input => {
+                cardNumberComplete += input.value;
+            });
+
+            // 驗證信用卡號碼是否已完全填寫（共16位數字）
+            if (cardNumberComplete.length === 16) {
+                // 如果通過驗證，進行表單提交或其它邏輯處理
+                // 例如：
+                // submitOrder(cardNumberComplete);
+                console.log('信用卡號碼:', cardNumberComplete); // 可以替換為實際的提交邏輯
+            } else {
+                // 未通過驗證，顯示錯誤信息
+                document.querySelector('.error-message').textContent = '請輸入有效的信用卡號碼';
+                document.querySelector('.error-message').style.display = 'block';
+            }
+
+            // 如果验证通过，调用 handleFormSubmit 处理后续逻辑
+            if (isValid) {
+                handleFormSubmit(event);
+            } else {
+                // 如果验证未通过，阻止表单默认提交行为
+                event.preventDefault();
+            }
+        });
+    });
+
+    //==================================顯示購物車項目==============================================
+    function displayCartItems(cartItems) {
+        // 獲取購物車項目表格的tbody元素
+        const tableBody = document.getElementById('cart-items-table').querySelector('tbody');
+        // 清空tbody的內容
+        tableBody.innerHTML = '';
+
+        // 遍歷購物車項目，為每個項目創建一個表格行
+        cartItems.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>$${item.price}</td>
+                <td>${item.quantity}</td>
+                <td>$${item.price * item.quantity}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    //==================================填充會員資訊==============================================
+    function autofillMemberDetails() {
+        fetch(projectName + '/members/details')
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // 用戶未登錄
+                        alert("請先登錄！");
+                        // 可以重定向到登錄頁面
+                        window.location.href = 'http://localhost:8081/Paradisiac/front-end/members/Login.jsp'; // 更新為實際的登錄頁面URL
+                    } else {
+                        throw new Error('無法獲取會員資料');
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('recipient-name').value = data.memName;
+                document.getElementById('recipient-phone').value = data.memPhone;
+                document.getElementById('recipient-address').value = data.memAddress;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    //為選項添加事件監聽器
+    document.getElementById('autofillDetailsCheckbox').addEventListener('change', function() {
+        if (this.checked) {
+            autofillMemberDetails();
+        } else {
+            // 如果取消勾選，清空表單欄位
+            clearFormFields();
+        }
+    });
+    function clearFormFields() {
+        document.getElementById('recipient-name').value = '';
+        document.getElementById('recipient-phone').value = '';
+        document.getElementById('recipient-address').value = '';
+    }
+
+
+    //==================================處理表單提交==============================================
+    function handleFormSubmit(event) {
+        // 防止表單的默認提交行為
+        event.preventDefault();
+
+        var isValid = true;
+        var inputs = document.querySelectorAll('#shipping-form input[required]');
+        var cardNumberComplete = '';
+
+        // 通用的前端驗證邏輯
+        inputs.forEach(function(input) {
+            var errorSpan = input.nextElementSibling;
+            if (!input.validity.valid) {
+                errorSpan.style.display = 'inline';
+                isValid = false;
+            } else {
+                errorSpan.style.display = 'none';
+            }
+        });
+
+        // 檢查支付方式相關的輸入
+        var paymentMethod = document.getElementById('payment-method').value;
+        if (paymentMethod === "1") {
+            // 檢查每個信用卡輸入段
+            var cardNumberInputs = document.querySelectorAll('input[id^="card-number-section-"]');
+            cardNumberInputs.forEach(function(input) {
+                if (input.value.length !== 4 || !input.validity.valid) {
+                    input.nextElementSibling.style.display = 'inline'; // 顯示錯誤信息
+                    isValid = false;
+                } else {
+                    cardNumberComplete += input.value; // 組合信用卡號碼
+                    input.nextElementSibling.style.display = 'none'; // 隱藏錯誤信息
+                }
+            });
+            if (!isValid) {
+                // 如果信用卡號碼無效，阻止表單提交
+                return;
+            }
+        } else if (paymentMethod === "0" && !document.getElementById('account-number').validity.valid) {
+            document.getElementById('account-number').nextElementSibling.style.display = 'inline';
+            isValid = false;
+        }
+
+        // 如果驗證通過，調用 submitOrder 函數處理提交邏輯
+        if (isValid) {
+            submitOrder(cardNumberComplete); // 傳遞完整的信用卡號碼到 submitOrder 函數
+        }
+    }
+
+    //==================================更新訂單狀態=============================================
+    function updateStatus(value) {
+        // 如果選擇的是信用卡，設置status為true，否則為false
+        orderStatus = value === "1";
+
+        // 根據選擇的支付方式顯示相應的文本框
+        var creditCardInfo = document.getElementById("credit-card-info");
+        var transferInfo = document.getElementById("transfer-info");
+        if (value === "1") { // 信用卡選項
+            creditCardInfo.style.display = "block";
+            transferInfo.style.display = "none";
+            // 使信用卡輸入框為必填
+            document.querySelectorAll('.credit-card-input').forEach(input => {
+                input.required = true;
+            });
+            // 不需要轉帳帳號
+            document.getElementById('account-number').required = false;
+        } else if (value === "0") { // 轉帳選項
+            transferInfo.style.display = "block";
+            creditCardInfo.style.display = "none";
+            // 不需要信用卡號碼
+            document.querySelectorAll('.credit-card-input').forEach(input => {
+                input.required = false;
+            });
+            // 使轉帳帳號為必填
+            document.getElementById('account-number').required = true;
+        } else { // 沒有選擇
+            transferInfo.style.display = "none";
+            creditCardInfo.style.display = "none";
+            // 兩種方式都不需要
+            document.querySelectorAll('.credit-card-input').forEach(input => {
+                input.required = false;
+            });
+            document.getElementById('account-number').required = false;
+        }
+    }
+
+    //==================================提交訂單=============================================
+    function deleteProducts(productNames) {
+    return fetch(projectName + '/Cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({ action: 'delete', cartData: JSON.stringify( productNames ) })
+    }).then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('刪除商品失敗');
+        }
+    });
+}
+
+function submitOrder(memNo) {
+    const recipientName = document.getElementById('recipient-name').value;
+    const recipientPhone = document.getElementById('recipient-phone').value;
+    const selectedCity = document.getElementById('city').value;
+    const streetAddress = document.getElementById('recipient-address').value;
+    
+
+    const fullAddress = selectedCity + streetAddress;
+
+    const cartItems = JSON.parse(sessionStorage.getItem('cartItems')) || [];
+    const buyItemList = cartItems.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+    }));
+
+    const productNameDelete = cartItems.map(item => item.name);
+
+    deleteProducts(productNameDelete)
+        .then(() => {
+             const orderData = {
+            orderName: recipientName,
+            orderPhone: recipientPhone,
+            address: fullAddress,
+            status: orderStatus,
+            totalAmount: calculateTotalAmount(cartItems),
+            buyItemList: buyItemList
+        };
+
+            return fetch(projectName +  `/members/orders`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData),
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('庫存不足，請重新選購！');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('訂單創建成功:', data);
+            alert('訂單創建成功');
+            window.location.href = projectName + '/memberOrders.html';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message);
+            window.location.href = projectName + '/productFront.html';
+        });
+}
+    //==================================計算購物車總金額=============================================
+    function calculateTotalAmount(cartItems) {
+        return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+</script>
+
+
+</body>
+</html>

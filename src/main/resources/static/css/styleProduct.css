@@ -1,0 +1,95 @@
+body {
+    background-image: url('https://cha103-29.s3.ap-northeast-1.amazonaws.com/pexels-jeff-ibera-1320755.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Arial', sans-serif;
+    background-color: lightblue;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+h2 {
+    text-align: center;
+    color:white;
+    padding-top: 50px;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* 商品卡片樣式 */
+.productCard {
+    width: calc((100% / 4) - 2%);
+    height: 250px;
+    margin: 1%;
+    float: left;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    transition: transform 0.3s;
+    color:white;
+}
+
+.productCard:hover {
+    transform: scale(1.05);
+}
+
+.productCard img {
+    max-width: 100%;
+    display: block;
+    margin: 10px auto;
+    max-height: 130px;
+}
+
+.productCard h3 {
+    font-size: 18px;
+    margin: 10px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.productCard p {
+    font-size: 16px;
+    margin-bottom: 10px;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+/* 商品詳情部分 */
+#productDetail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 100px;
+    padding-top: 10px;
+    border-bottom: 2px solid;
+    color:black;
+}
+
+#productDetail img {
+    max-width: 300px; /* 調整圖片大小 */
+    margin-right: 20px; /* 圖片和表格之間的間距 */
+}
+
+#productDetail table {
+    border-collapse: collapse;
+    width: 60%; /* 調整表格寬度 */
+
+}
+
+#productDetail table, #productDetail th, #productDetail td {
+    border: 1px solid white;
+    padding: 8px;
+    text-align: left;
+    background-color: rgba(255, 255, 255, 0.1); /* 半透明背景 */
+}

@@ -1,0 +1,141 @@
+body {
+    background-image: url('https://cha103-29.s3.ap-northeast-1.amazonaws.com/pexels-jeff-ibera-1320755.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Arial', sans-serif;
+    background-color: lightblue;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.center-text {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.center-text h2 {
+    font-family: 'ZCOOL QingKe HuangYou', cursive; /* 可愛的手寫風格字體 */
+    font-size: 24px; /* 字體大小 */
+    color: #333; /* 字體顏色 */
+}
+
+
+.container {
+    display: flex;
+}
+
+aside {
+    flex: 1;
+    max-width: 20%;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+}
+
+aside ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+aside ul li {
+    margin-bottom: 10px;
+}
+
+aside ul li button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    background-color: #f7f7f7;
+    transition: background-color 0.3s ease;
+}
+
+aside ul li button:hover {
+    background-color: #e0e0e0;
+}
+
+.order-item {
+    font-family: 'Noto Sans TC', sans-serif; /* 圓潤的無襯線字體 */
+    font-size: 16px; /* 字體大小 */
+    border: 1px solid #e1e1e1;
+    margin-bottom: 8px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1); /* ������� */
+    cursor: pointer;
+    transition: background 0.3s ease;
+    color: white;
+}
+
+.order-item:hover {
+    background: #f0f0f0;
+}
+
+.order-details {
+    display: none;
+    padding: 10px;
+    border-top: 1px solid #e1e1e1;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.order-summary {
+    margin-top: 10px;
+}
+
+.items-per-page {
+    margin-top: 10px;
+    text-align: right;
+}
+
+button {
+    border:0;
+    background-color:grey;
+    color:#fff;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* 嚙踐��策嚙踝��蕭赯萇�蕭��蕭 */
+.table-responsive {
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-collapse: collapse;
+    color:white;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    color: black;
+}
+
+.narrow-table {
+    max-width: 80%;
+    margin: 0 auto;
+    color:black;
+}
+
+main {
+    margin-bottom: 100px;
+}
+
+/* ���� */
+.pagination-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* ����閬矽����� */
+    color: black;
+}
+
