@@ -1,7 +1,6 @@
 package com.bot.springbootmall.product.rowmapper;
 
 import com.bot.springbootmall.product.constant.ProductCategory;
-import com.bot.springbootmall.product.constant.ProductStatus;
 import com.bot.springbootmall.product.model.Product;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -9,29 +8,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ProductRowMapper implements RowMapper<Product> {
-
     @Override
     public Product mapRow(ResultSet resultSet, int i) throws SQLException {
-        Product product = new Product();
-
-        product.setProductId(resultSet.getInt("product_id"));
-        product.setProductName(resultSet.getString("product_name"));
-
-        String categoryStr = resultSet.getString("category");
-        ProductCategory category = ProductCategory.valueOf(categoryStr);
-        product.setCategory(category);
-
-//        product.setCategory(ProductCategory.valueOf(resultSet.getString("category")));
-
-        product.setImageUrl(resultSet.getString("image_url"));
-        product.setPrice(resultSet.getInt("price"));
-        product.setStock(resultSet.getInt("stock"));
-        product.setDescription(resultSet.getString("description"));
-        product.setCreatedDate(resultSet.getTimestamp("created_date"));
-        product.setLastModifiedDate(resultSet.getTimestamp("last_modified_date"));
-
-        product.setStatus(ProductStatus.valueOf(resultSet.getString("status")));
-
-        return product;
+        return Product.builder()
+                .id(resultSet.getLong("product_id"))
+                .productName(resultSet.getString("product_name"))
+                .category(ProductCategory.valueOf(resultSet.getString("category")))
+                .imageUrl(resultSet.getString("image_url"))
+                .price(resultSet.getInt("price"))
+                .stock(resultSet.getInt("stock"))
+                .description(resultSet.getString("description"))
+                .createdDate(resultSet.getTimestamp("created_date"))
+                .lastModifiedDate(resultSet.getTimestamp("last_modified_date")).build();
     }
 }

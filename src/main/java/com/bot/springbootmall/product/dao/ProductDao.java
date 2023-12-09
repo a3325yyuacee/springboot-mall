@@ -9,20 +9,15 @@ import java.util.List;
 public interface ProductDao {
     List<Product> getProducts(ProductQueryParams productQueryParams);
 
-    Product getProductById(Integer productId);
+    Product getProductById(long productId);
 
-    Product getProductByIdForUpdate(Integer productId);
+    Integer countProduct(ProductQueryParams productQueryParams);
 
     Integer createProduct(ProductRequest productRequest);
 
-    void updateProduct (Integer productId, ProductRequest productRequest);
+    void updateProduct(long productId, ProductRequest productRequest);
 
-    void updateStock(Integer productId, Integer stock);
+    void updateStock(long productId, Integer stock);
 
-    void deleteProductById (Integer productId);
-
-    Integer countProduct (ProductQueryParams productQueryParams);
-
-    List<Product> getAllProductsForCart(ProductQueryParams productQueryParams);
-
+    void deleteProductById(long productId);
 }

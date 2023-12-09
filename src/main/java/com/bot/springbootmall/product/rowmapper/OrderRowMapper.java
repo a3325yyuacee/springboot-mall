@@ -7,19 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class OrderRowMapper implements RowMapper<Order> {
-
     @Override
-    public Order mapRow(ResultSet rs, int i) throws SQLException {
-        Order order = new Order();
-        order.setOrderId(rs.getInt("order_id"));
-        order.setMemno(rs.getInt("mem_no"));
-        order.setTotalAmount(rs.getInt("total_amount"));
-        order.setOrderName(rs.getString("order_name"));
-        order.setOrderPhone(rs.getInt("order_phone"));
-        order.setAddress(rs.getString("address"));
-        order.setCreatedDate(rs.getTimestamp("created_date"));
-        order.setLastModifiedDate(rs.getTimestamp("last_modified_date"));
-
-        return order;
+    public Order mapRow(ResultSet resultSet, int i) throws SQLException {
+        return Order.builder()
+                .orderId(resultSet.getInt("order_id"))
+                .userId(resultSet.getInt("user_id"))
+                .totalAmount(resultSet.getInt("total_amount"))
+                .createdDate(resultSet.getTimestamp("created_date"))
+                .lastModifiedDate(resultSet.getTimestamp("last_modified_date"))
+                .build();
     }
 }

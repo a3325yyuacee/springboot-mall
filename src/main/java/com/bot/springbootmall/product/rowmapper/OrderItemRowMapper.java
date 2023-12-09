@@ -8,16 +8,15 @@ import java.sql.SQLException;
 
 public class OrderItemRowMapper implements RowMapper<OrderItem> {
     @Override
-    public OrderItem mapRow(ResultSet rs, int i) throws SQLException {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrderItemId(rs.getInt("order_item_id"));
-        orderItem.setOrderId(rs.getInt("order_id"));
-        orderItem.setProductId(rs.getInt("product_id"));
-        orderItem.setQuantity(rs.getInt("quantity"));
-        orderItem.setAmount(rs.getInt("amount"));
-
-        orderItem.setProductName(rs.getString("product_name"));
-        orderItem.setImageUrl(rs.getString("image_url"));
-        return orderItem;
+    public OrderItem mapRow(ResultSet resultSet, int i) throws SQLException {
+        return OrderItem.builder()
+                .orderItemId(resultSet.getInt("order_item_id"))
+                .orderId(resultSet.getInt("order_id"))
+                .productId(resultSet.getInt("product_id"))
+                .quantity(resultSet.getInt("quantity"))
+                .amount(resultSet.getInt("amount"))
+                .productName(resultSet.getString("product_name"))
+                .imageUrl(resultSet.getString("image_url"))
+                .build();
     }
 }

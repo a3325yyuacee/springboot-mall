@@ -4,42 +4,39 @@ import com.bot.springbootmall.product.dao.UserDao;
 import com.bot.springbootmall.product.dto.UserRegisterRequest;
 import com.bot.springbootmall.product.model.User;
 import com.bot.springbootmall.product.rowmapper.UserRowMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 
 @Component
 public class UserDaoImpl implements UserDao {
 
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    public UserDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     @Override
     public User getUserById(Integer userId) {
         String sql = "SELECT user_id, email, password, created_date, last_modified_date " +
                 "FROM user WHERE user_id = :userId";
 
-        return getUser(sql, "userId", userId);
-    }
-
-    private User getUser(String sql, String key, Object value) {
         Map<String, Object> map = new HashMap<>();
-        map.put(key, value);
+        map.put("userId", userId);
 
         List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
 
-        if(userList.isEmpty()){
-            return null;
-        }
-
-        return userList.get(0);
+        return userList.isEmpty() ? null : userList.get(0);
     }
 
     @Override
@@ -47,23 +44,30 @@ public class UserDaoImpl implements UserDao {
         String sql = "SELECT user_id, email, password, created_date, last_modified_date " +
                 "FROM user WHERE email = :email";
 
-        return getUser(sql, "email", email);
+        Map<String, Object> map = new HashMap<>();
+        map.put("email", email);
+
+        List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
+
+        return userList.isEmpty() ? null : userList.get(0);
     }
 
     @Override
     public Integer createUser(UserRegisterRequest userRegisterRequest) {
-        String sql = "INSERT INTO user(email, password) VALUES (:email, :password)";
+        String sql = "INSERT INTO user (email, password, created_date, last_modified_date) " +
+                "VALUES (:email, :password, :createdDate, :lastModifiedDate)";
 
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("email", userRegisterRequest.getEmail());
         map.put("password", userRegisterRequest.getPassword());
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        LocalDateTime now = LocalDateTime.now();
+        map.put("createdDate", now);
+        map.put("lastModifiedDate", now);
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
 
-        Integer userId = keyHolder.getKey().intValue();
-
-        return userId;
+        return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 }

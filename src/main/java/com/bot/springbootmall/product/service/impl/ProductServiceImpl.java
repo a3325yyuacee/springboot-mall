@@ -15,20 +15,23 @@ import java.util.List;
 @Component
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
-    private ProductDao productDao;
+    private final ProductDao productDao;
 
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    public ProductServiceImpl(ProductDao productDao) {
+        this.productDao = productDao;
+    }
 
+    @Override
+    public Integer countProduct(ProductQueryParams productQueryParams) {
+        return productDao.countProduct(productQueryParams);
+    }
 
     @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
         return productDao.getProducts(productQueryParams);
     }
 
-    @Override
-    public Product getProductById(Integer productId) {
+    public Product getProductById(long productId) {
         return productDao.getProductById(productId);
     }
 
@@ -38,27 +41,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void updateProduct(Integer productId, ProductRequest productRequest) {
+    public void updateProduct(long productId, ProductRequest productRequest) {
         productDao.updateProduct(productId, productRequest);
     }
 
     @Override
-    public void deleteProductById(Integer productId) {
+    public void deleteProductById(long productId) {
         productDao.deleteProductById(productId);
     }
-
-    @Override
-    public Integer countProduct(ProductQueryParams productQueryParams) {
-        return productDao.countProduct(productQueryParams);
-    }
-
-    @Override
-    public List<Product> getAllProductsForCart() {
-        String sql = "SELECT product_id, product_name, category, image_url, price, stock, " +
-                "description, created_date, last_modified_date, status " +
-                "from product";
-
-        return namedParameterJdbcTemplate.query(sql, new ProductRowMapper());
-    }
-
 }

@@ -9,16 +9,13 @@ import java.util.List;
 public interface ProductService {
     List<Product> getProducts(ProductQueryParams productQueryParams);
 
-    Product getProductById(Integer productId);
-
-    Integer createProduct(ProductRequest productRequest);
-
-    void updateProduct(Integer productId, ProductRequest productRequest);
-
-    void deleteProductById(Integer productId);
+    Product getProductById(long id);
 
     Integer countProduct(ProductQueryParams productQueryParams);
 
-    List<Product> getAllProductsForCart();
+    Integer createProduct(ProductRequest productRequest);
 
+    void updateProduct(long productId, ProductRequest productRequest);
+
+    void deleteProductById(long productId);
 }

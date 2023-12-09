@@ -1,30 +1,15 @@
 package com.bot.springbootmall.product.dto;
 
-import javax.validation.constraints.Min;
+import lombok.Builder;
+import lombok.Value;
+
 import javax.validation.constraints.NotNull;
 
+@Builder
+@Value
 public class BuyItem {
+    @NotNull Integer productId;
 
-    @NotNull
-    private Integer productId;
-
-    @Min(1)
-    @NotNull
-    private Integer quantity;
-
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
+    @NotNull Integer quantity;
 }
+

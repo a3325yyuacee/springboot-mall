@@ -2,7 +2,6 @@ package com.bot.springbootmall.product.controller;
 
 import com.bot.springbootmall.AmazonS3ClientService;
 import com.bot.springbootmall.product.constant.ProductCategory;
-import com.bot.springbootmall.product.constant.ProductStatus;
 import com.bot.springbootmall.product.dto.ProductQueryParams;
 import com.bot.springbootmall.product.dto.ProductRequest;
 import com.bot.springbootmall.product.model.Product;
@@ -15,98 +14,52 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.List;
 
 @Validated
 @RestController
-@CrossOrigin(origins = "*")
 public class ProductController {
 
-    @Autowired
-    private AmazonS3ClientService amazonS3ClientService;
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    // 查詢產品列表
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
     @GetMapping("/products")
     public ResponseEntity<Page<Product>> getProducts(
-            //查詢條件 Filtering
-            @RequestParam (required = false) ProductCategory category,
-            @RequestParam (required = false) String search,
-            //排序 Sorting
-            @RequestParam (defaultValue = "product_id") String orderBy,
-            @RequestParam (defaultValue = "asc") String sort,
-            //分頁 Pagination
-            @RequestParam (defaultValue = "8") @Max(1000) @Min(0) Integer limit,
-            @RequestParam (defaultValue = "0") @Min(0) Integer offset
-    ){
+            // 查詢條件 Filtering
+            @RequestParam(required = false) ProductCategory category,
+            @RequestParam(required = false) String search,
 
-        ProductQueryParams productQueryParams = new ProductQueryParams();
-        productQueryParams.setCategory(category);
-        productQueryParams.setSearch(search);
-        productQueryParams.setOrderBy(orderBy);
-        productQueryParams.setSort(sort);
-        productQueryParams.setLimit(limit);
-        productQueryParams.setOffset(offset);
+            // 排序 Sorting
+            @RequestParam(defaultValue = "created_date") String orderBy,
+            @RequestParam(defaultValue = "desc") String sort,
 
-        // 取得 product list
-        List<Product> productList = productService.getProducts(productQueryParams);
+            // 分頁 Pagination
+            @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,
+            @RequestParam(defaultValue = "0") @Min(0) Integer offset
+    ) {
+        ProductQueryParams productQueryParams = new ProductQueryParams(category, search, orderBy,
+                sort, limit, offset);
 
-        // 取得 product 總數
-        Integer total = productService.countProduct(productQueryParams);
-
-        // 分頁
-        Page<Product> page = new Page<>();
-        page.setLimit(limit);
-        page.setOffset(offset);
-        page.setTotal(total);
-        page.setResults(productList);
+        Page<Product> page = Page.<Product>builder()
+                .limit(limit)
+                .offset(offset)
+                // 取得 product 總數
+                .total(productService.countProduct(productQueryParams))
+                // 取得 product list
+                .results(productService.getProducts(productQueryParams))
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
-    // 獲取所有產品用於購物車
-    @GetMapping("/allForCart")
-	 public ResponseEntity<Page<Product>> getAllProductsForCart(
-	            //查詢條件 Filtering
-	            @RequestParam (required = false) ProductCategory category,
-	            @RequestParam (required = false) String search,
-	            //排序 Sorting
-	            @RequestParam (defaultValue = "product_id") String orderBy,
-	            @RequestParam (defaultValue = "asc") String sort,
-	            //分頁 Pagination
-	            @RequestParam (defaultValue = "1000") @Max(1000) @Min(0) Integer limit,
-	            @RequestParam (defaultValue = "0") @Min(0) Integer offset
-	    ){
-
-	        ProductQueryParams productQueryParams = new ProductQueryParams();
-	        productQueryParams.setCategory(category);
-	        productQueryParams.setSearch(search);
-	        productQueryParams.setOrderBy(orderBy);
-	        productQueryParams.setSort(sort);
-	        productQueryParams.setLimit(limit);
-	        productQueryParams.setOffset(offset);
-
-	        // 取得 product list
-	        List<Product> productList = productService.getProducts(productQueryParams);
-
-	        // 取得 product 總數
-	        Integer total = productService.countProduct(productQueryParams);
-
-	        // 分頁
-	        Page<Product> page = new Page<>();
-	        page.setLimit(limit);
-	        page.setOffset(offset);
-	        page.setTotal(total);
-	        page.setResults(productList);
-
-	        return ResponseEntity.status(HttpStatus.OK).body(page);
-	    }
-    //查詢單個產品
     @GetMapping("/products/{productId}")
-    public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
+    public ResponseEntity<Product> getProduct(@PathVariable long productId) {
         Product product = productService.getProductById(productId);
 
         if (product != null) {
@@ -116,86 +69,29 @@ public class ProductController {
         }
     }
 
-    //新增產品
     @PostMapping("/products")
-    public ResponseEntity<Product> createProduct(
-            @RequestParam("productName") String productName,
-            @RequestParam("price") Integer price,
-            @RequestParam("stock") Integer stock,
-            @RequestParam("description") String description,
-            @RequestParam("category") ProductCategory category,
-            @RequestParam("status") ProductStatus status,
-            @RequestParam("image") MultipartFile image) {
-
-        // 上傳圖片到 S3 並獲取 URL
-        String imageUrl = amazonS3ClientService.uploadFileToS3Bucket(image, true);
-
-        // 創建 ProductRequest 對象，這假設 ProductRequest 有一個設置 imageUrl 的方法
-        ProductRequest productRequest = new ProductRequest();
-        productRequest.setProductName(productName);
-        productRequest.setPrice(price);
-        productRequest.setStock(stock);
-        productRequest.setDescription(description);
-        productRequest.setCategory(category);
-        productRequest.setStatus(status); // 假設 status 是一個 Enum
-        productRequest.setImageUrl(imageUrl); // 設置圖片的 URL
-
-        // 調用 ProductService 來創建產品
+    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest) {
         Integer productId = productService.createProduct(productRequest);
-        Product product = productService.getProductById(productId);
 
-        // 創建 ResponseEntity 並返回
-        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.getProductById(productId));
     }
 
-    //修改商品
     @PutMapping("/products/{productId}")
-    public ResponseEntity<Product> updateProduct(
-            @PathVariable Integer productId,
-            @RequestParam("productName") String productName,
-            @RequestParam("price") Integer price,
-            @RequestParam("stock") Integer stock,
-            @RequestParam("description") String description,
-            @RequestParam("category") ProductCategory category,
-            @RequestParam("status") ProductStatus status,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
-
-        // 首先，檢查產品是否存在
-        Product existingProduct = productService.getProductById(productId);
-        if (existingProduct == null) {
+    public ResponseEntity<Product> updateProduct(@PathVariable long productId,
+                                                 @RequestBody @Valid ProductRequest productRequest) {
+        // 檢查 product 是否存在
+        if (productService.getProductById(productId) == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        // 如果有新的圖片上傳，處理圖片上傳到 S3
-        String imageUrl = existingProduct.getImageUrl(); // 使用现有的图片URL
-        if (image != null && !image.isEmpty()) {
-            imageUrl = amazonS3ClientService.uploadFileToS3Bucket(image, true);
-        }
-
-        // 創建 ProductRequest ，設置新的訊息
-        ProductRequest productRequest = new ProductRequest();
-        productRequest.setProductName(productName);
-        productRequest.setPrice(price);
-        productRequest.setStock(stock);
-        productRequest.setDescription(description);
-        productRequest.setCategory(category);
-        productRequest.setStatus(status);
-        productRequest.setImageUrl(imageUrl); // 新的圖片URL
-
-        // 更新產品信息
+        // 修改商品數據
         productService.updateProduct(productId, productRequest);
 
-        // 獲取更新後的產品信息
-        Product updatedProduct = productService.getProductById(productId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getProductById(productId));
     }
 
-
-    //刪除商品
     @DeleteMapping("/products/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId) {
-
+    public ResponseEntity<?> deleteProduct(@PathVariable long productId) {
         productService.deleteProductById(productId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
