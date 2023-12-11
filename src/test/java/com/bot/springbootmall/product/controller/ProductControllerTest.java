@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,7 +62,7 @@ public class ProductControllerTest {
     public void createProduct_success() throws Exception {
         ProductRequest productRequest = new ProductRequest();
         productRequest.setProductName("test food product");
-        productRequest.setCategory(ProductCategory.ParadisiacTheme);
+        productRequest.setCategory(ProductCategory.FOOD);
         productRequest.setImageUrl("http://test.com");
         productRequest.setPrice(100);
         productRequest.setStock(2);
@@ -110,7 +109,7 @@ public class ProductControllerTest {
     public void updateProduct_success() throws Exception {
         ProductRequest productRequest = new ProductRequest();
         productRequest.setProductName("test food product");
-        productRequest.setCategory(ProductCategory.ParadisiacTheme);
+        productRequest.setCategory(ProductCategory.FOOD);
         productRequest.setImageUrl("http://test.com");
         productRequest.setPrice(100);
         productRequest.setStock(2);
@@ -157,7 +156,7 @@ public class ProductControllerTest {
     public void updateProduct_productNotFound() throws Exception {
         ProductRequest productRequest = new ProductRequest();
         productRequest.setProductName("test food product");
-        productRequest.setCategory(ProductCategory.ParadisiacTheme);
+        productRequest.setCategory(ProductCategory.FOOD);
         productRequest.setImageUrl("http://test.com");
         productRequest.setPrice(100);
         productRequest.setStock(2);
